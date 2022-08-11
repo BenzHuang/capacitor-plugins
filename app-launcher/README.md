@@ -44,6 +44,7 @@ const openPortfolioPage = async () => {
 
 * [`canOpenUrl(...)`](#canopenurl)
 * [`openUrl(...)`](#openurl)
+* [`openWpsApp(...)`](#openwpsapp)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -100,6 +101,23 @@ On Android the URL can be a known URLScheme or an app package name.
 --------------------
 
 
+### openWpsApp(...)
+
+```typescript
+openWpsApp(options: OpenFileOptions) => Promise<OpenURLResult>
+```
+
+Open wps app with the given file name
+
+| Param         | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`options`** | <code><a href="#openfileoptions">OpenFileOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#openurlresult">OpenURLResult</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -129,5 +147,12 @@ On Android the URL can be a known URLScheme or an app package name.
 | Prop      | Type                |
 | --------- | ------------------- |
 | **`url`** | <code>string</code> |
+
+
+#### OpenFileOptions
+
+| Prop           | Type                |
+| -------------- | ------------------- |
+| **`fileName`** | <code>string</code> |
 
 </docgen-api>
