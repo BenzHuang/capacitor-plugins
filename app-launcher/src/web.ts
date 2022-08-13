@@ -19,7 +19,7 @@ export class AppLauncherWeb extends WebPlugin implements AppLauncherPlugin {
     return { completed: true };
   }
 
-  async	openWpsApp(_options: OpenFileOptions): Promise<OpenURLResult> {
+  async	openAppWithFile(_options: OpenFileOptions): Promise<OpenURLResult> {
 	  return { completed: true };
   }
 }

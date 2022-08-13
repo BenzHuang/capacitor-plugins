@@ -25,11 +25,11 @@ export interface AppLauncherPlugin {
 	openUrl(options: OpenURLOptions): Promise<OpenURLResult>;
 
 	/**
-	 * Open wps app with the given file name
+	 * Open app with the given file name
 	 *
 	 * @param options
 	 */
-	openWpsApp(options: OpenFileOptions): Promise<OpenURLResult>
+	openAppWithFile(options: OpenFileOptions): Promise<OpenURLResult>
 }
 
 export interface CanOpenURLOptions {

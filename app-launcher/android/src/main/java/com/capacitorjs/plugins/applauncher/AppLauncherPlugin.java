@@ -26,14 +26,14 @@ public class AppLauncherPlugin extends Plugin {
 		put(".asf", "video/x-ms-asf");
 		put(".avi", "video/x-msvideo");
 		put(".bin", "application/octet-stream");
-		put(".bmp", "image/bmp");
+		//put(".bmp", "image/bmp");
 		put(".c", "text/plain");
 		put(".class", "application/octet-stream");
 		put(".conf", "text/plain");
 		put(".cpp", "text/plain");
 		put(".doc", "application/msword");
 		put(".exe", "application/octet-stream");
-		put(".gif", "image/gif");
+
 		put(".gtar", "application/x-gtar");
 		put(".gz", "application/x-gzip");
 		put(".h", "text/plain");
@@ -41,8 +41,10 @@ public class AppLauncherPlugin extends Plugin {
 		put(".html", "text/html");
 		put(".jar", "application/java-archive");
 		put(".java", "text/plain");
-		put(".jpeg", "image/jpeg");
-		put(".jpg", "image/jpeg");
+//		put(".gif", "image/gif");
+//		put(".jpeg", "image/jpeg");
+//		put(".jpg", "image/jpeg");
+//		put(".png", "image/png");
 		put(".js", "application/x-javascript");
 		put(".log", "text/plain");
 		put(".m3u", "audio/x-mpegurl");
@@ -64,7 +66,7 @@ public class AppLauncherPlugin extends Plugin {
 		put(".msg", "application/vnd.ms-outlook");
 		put(".ogg", "audio/ogg");
 		put(".pdf", "application/pdf");
-		put(".png", "image/png");
+
 		put(".pps", "application/vnd.ms-powerpoint");
 		put(".ppt", "application/vnd.ms-powerpoint");
 		put(".prop", "text/plain");
@@ -140,7 +142,7 @@ public class AppLauncherPlugin extends Plugin {
 	}
 
 	@PluginMethod
-	public void openWpsApp(PluginCall call) {
+	public void openAppWithFile(PluginCall call) {
 		//get fileName
 		String fileName = call.getString("fileName");
 
@@ -148,7 +150,7 @@ public class AppLauncherPlugin extends Plugin {
 
 		Intent intent = new Intent();
 		Bundle bundle = new Bundle();
-		//配置wps阅读模式
+		//配置阅读模式
 		//只读模式
 		bundle.putString("OpenMode", "ReadOnly");
 		//关闭文件时删除使用记录
@@ -161,10 +163,24 @@ public class AppLauncherPlugin extends Plugin {
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-		//打开wps
-		intent.setClassName("cn.wps.moffice_eng", "cn.wps.moffice.documentmanager.PreStartActivity2");
-
 		if (fileName != null) {
+			//todo get type
+			String extension = "";
+			int i = fileName.lastIndexOf('.');
+			if (i > 0) {
+				extension = fileName.substring(i);
+			}
+			Logger.info("extension:'" + extension);
+
+			String type = mimeTypeMapAsExtension.get(extension);
+			Logger.info("type:'" + type);
+
+			if (type != null) {
+				//用wps打开
+				intent.setClassName("cn.wps.moffice_eng", "cn.wps.moffice.documentmanager.PreStartActivity2");
+				Logger.info("open by wps, classname:'cn.wps.moffice_eng'");
+			}
+
 			//读取文件
 			File file = new File(fileName);
 			if (file.exists()) {
@@ -174,16 +190,6 @@ public class AppLauncherPlugin extends Plugin {
 				Logger.info("uri:'" + uri.toString());
 				//intent.setData(uri);
 
-				//todo get type
-				String extension = "";
-				int i = fileName.lastIndexOf('.');
-				if (i > 0) {
-					extension = fileName.substring(i);
-				}
-				Logger.info("extension:'" + extension);
-
-				String type = mimeTypeMapAsExtension.get(extension);
-				Logger.info("type:'" + type);
 				if (type != null) {
 					intent.setDataAndType(uri, type);
 				} else {
