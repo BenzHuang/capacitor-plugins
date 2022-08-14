@@ -3,9 +3,14 @@ package com.capacitorjs.plugins.applauncher;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.content.FileProvider;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.content.Context;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
@@ -15,6 +20,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 @CapacitorPlugin(name = "AppLauncher")
 public class AppLauncherPlugin extends Plugin {
@@ -143,6 +149,37 @@ public class AppLauncherPlugin extends Plugin {
 
 	@PluginMethod
 	public void openAppWithFile(PluginCall call) {
+		// stop wps
+		ActivityManager activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
+		final PackageManager manager = getContext().getPackageManager();
+		try {
+			//查看后台运行的app，wps的在打开pdf、word情况下只找出报名cn.wps.moffice_eng
+			/*List localList = manager.getInstalledPackages(0);
+			for (int i = 0; i < localList.size(); i++) {
+				PackageInfo localPackageInfo1 = (PackageInfo) localList.get(i);
+				String str1 = localPackageInfo1.packageName.split(":")[0];
+				if (((ApplicationInfo.FLAG_SYSTEM & localPackageInfo1.applicationInfo.flags) == 0)
+					&& ((ApplicationInfo.FLAG_UPDATED_SYSTEM_APP & localPackageInfo1.applicationInfo.flags) == 0)
+					&& ((ApplicationInfo.FLAG_STOPPED & localPackageInfo1.applicationInfo.flags) == 0)) {
+					Logger.info("packages:" + str1);
+				}
+			}*/
+
+			//关闭wps进程
+			activityManager.killBackgroundProcesses("cn.wps.moffice_eng");
+
+			//查看正在允许app，只找到当前app
+			/*List<RunningAppProcessInfo> appProcessInfo = activityManager.getRunningAppProcesses();
+			for (int i = 0; i < appProcessInfo.size(); i++) {
+				Logger.info("packages:" + String.join(", ", appProcessInfo.get(i).pkgList));
+				Logger.info("processName:" + appProcessInfo.get(i).processName);
+
+			}*/
+			Logger.info("kill wps success!");
+		} catch (Exception e) {
+			Logger.error(getLogTag(), "fail to kill wps!, message:" + e.getMessage(), e);
+		}
+
 		//get fileName
 		String fileName = call.getString("fileName");
 
@@ -153,15 +190,29 @@ public class AppLauncherPlugin extends Plugin {
 		//配置阅读模式
 		//只读模式
 		bundle.putString("OpenMode", "ReadOnly");
-		//关闭文件时删除使用记录
+		bundle.putString("ThirdPackage", getContext().getPackageName());
+		//关闭文件时是否发送广播,默认不发送
+		bundle.putBoolean("SendCloseBroad", true);
+		//Back 按钮
+		bundle.putBoolean("BackKeyDown", true);
+		//Home 按钮
+		bundle.putBoolean("HomeKeyDown", true);
+		//删除使用记录
 		bundle.putBoolean("ClearTrace", true);
-
+		bundle.putBoolean("IsClearTrace", true);
+		//删除文件自身
+		bundle.putBoolean("ClearFile", true);
+		//清除缓冲区
+		bundle.putBoolean("ClearBuffer", true);
+		bundle.putBoolean("DisplayView", false);
 		intent.putExtras(bundle);
 
 		//设置intent的Action属性
 		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		//清除之前已经存在的Activity实例所在的task
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		if (fileName != null) {
 			//todo get type
