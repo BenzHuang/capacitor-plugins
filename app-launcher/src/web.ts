@@ -4,6 +4,7 @@ import type {
   AppLauncherPlugin,
   CanOpenURLOptions,
   CanOpenURLResult,
+  OpenFileOptions,
   OpenURLOptions,
   OpenURLResult,
 } from './definitions';
@@ -15,6 +16,10 @@ export class AppLauncherWeb extends WebPlugin implements AppLauncherPlugin {
 
   async openUrl(options: OpenURLOptions): Promise<OpenURLResult> {
     window.open(options.url, '_blank');
+    return { completed: true };
+  }
+
+  async	openAppWithFile(_options: OpenFileOptions): Promise<OpenURLResult> {
     return { completed: true };
   }
 }

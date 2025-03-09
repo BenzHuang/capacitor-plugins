@@ -23,6 +23,13 @@ export interface AppLauncherPlugin {
    * @since 1.0.0
    */
   openUrl(options: OpenURLOptions): Promise<OpenURLResult>;
+
+  /**
+   * Open app with the given file name
+   *
+   * @param options
+   */
+  openAppWithFile(options: OpenFileOptions): Promise<OpenURLResult>;
 }
 
 export interface CanOpenURLOptions {
@@ -39,4 +46,8 @@ export interface OpenURLOptions {
 
 export interface OpenURLResult {
   completed: boolean;
+}
+
+export interface OpenFileOptions {
+  fileName: string;
 }
